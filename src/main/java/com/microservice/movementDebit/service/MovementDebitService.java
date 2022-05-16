@@ -1,6 +1,6 @@
 package com.microservice.movementDebit.service;
 
-import com.microservice.movementDebit.model.movementDebit;
+import com.microservice.movementDebit.model.MovementDebit;
 import com.microservice.movementDebit.repository.movementDebitRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,20 +9,20 @@ import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
-public class movementDebitService {
+public class MovementDebitService {
 
     private  final movementDebitRepository movementDebitRepository;
 
-    public Flux<movementDebit> getAllCreditMovement(){
+    public Flux<MovementDebit> getAllCreditMovement(){
         return movementDebitRepository.findAll();
     }
-    public Mono<movementDebit> getCreditMovementById(String id){
+    public Mono<MovementDebit> getCreditMovementById(String id){
         return  movementDebitRepository.findById(id);
     }
-    public Mono<movementDebit> createCreditMovement(movementDebit creditMovement){
+    public Mono<MovementDebit> createCreditMovement(MovementDebit creditMovement){
         return movementDebitRepository.save(creditMovement);
     }
-    public Mono<movementDebit> updateCreditMovement(String id, movementDebit creditMovement){
+    public Mono<MovementDebit> updateCreditMovement(String id, MovementDebit creditMovement){
         return movementDebitRepository.findById(id)
                 .flatMap(bean -> {
                     bean.setAmount(creditMovement.getAmount());
@@ -30,12 +30,11 @@ public class movementDebitService {
                     bean.setDateLimit(creditMovement.getDateLimit());
                     bean.setCommission(creditMovement.getCommission());
                     bean.setDescription(creditMovement.getDescription());
-                    bean.setIdAccountCustomer(creditMovement.getIdAccountCustomer());
-                    bean.setIdAccountDestination(creditMovement.getIdAccountDestination());
+                    bean.setIdAccount(creditMovement.getIdAccount());
                     return movementDebitRepository.save(bean);
                 });
     }
-    public Mono<movementDebit> deleteCreditMovement(String id){
+    public Mono<MovementDebit> deleteCreditMovement(String id){
         return movementDebitRepository.findById(id)
                 .flatMap(existsCreditMovement -> movementDebitRepository.delete(existsCreditMovement)
                         .then(Mono.just(existsCreditMovement)));

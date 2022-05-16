@@ -3,8 +3,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class movementDebitApplication {
+public class MovementDebitApplication {
     public static void main(String[] args) {
-        SpringApplication.run(movementDebitApplication.class, args);
+        SpringApplication.run(MovementDebitApplication.class, args);
     }
 }

@@ -1,7 +1,10 @@
 package com.microservice.movementDebit.controller;
 
-import com.microservice.movementDebit.model.movementDebit;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.microservice.movementDebit.model.MovementDebit;
+import com.microservice.movementDebit.service.MovementDebitService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -9,43 +12,48 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Date;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/movementDebit")
-public class movementDebitController {
+public class MovementDebitController {
 
-    private final com.microservice.movementDebit.service.movementDebitService movementDebitService;
+    private final MovementDebitService movementDebitService;
 
-    @GetMapping
-    public Mono<ResponseEntity<Flux<movementDebit>>>getAllCreditMovement() {
-        Flux<movementDebit> list=this.movementDebitService.getAllCreditMovement();
+    @GetMapping(value = "/allMovementCredits")
+    public Mono<ResponseEntity<Flux<MovementDebit>>>getAllCreditMovement() {
+        Flux<MovementDebit> list=this.movementDebitService.getAllCreditMovement();
         return  Mono.just(ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(list));
     }
 
-    @GetMapping("/{id}")
-    public Mono<ResponseEntity<movementDebit>> getCreditMovementById(@PathVariable String id){
+    @GetMapping(value = "/{id}")
+    public Mono<ResponseEntity<MovementDebit>> getCreditMovementById(@PathVariable String id){
         var creditMovement=this.movementDebitService.getCreditMovementById(id);
         return creditMovement.map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping(value = "/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<movementDebit> create(@RequestBody movementDebit account){
+    public Mono<MovementDebit> create(@RequestBody MovementDebit account, @JsonFormat(pattern = "dd-MM-yyyy" , timezone="GMT-05:00") Date date){
+        if (account.getDateStart() == null) {
+            account.setDateStart(date);
+        }
         return this.movementDebitService.createCreditMovement(account);
     }
 
-    @PutMapping("/{id}")
-    public Mono<ResponseEntity<movementDebit>> updateCreditMovementById(@PathVariable String id, @RequestBody movementDebit movementDebit){
+    @PutMapping(value = "/update/{id}")
+    public Mono<ResponseEntity<MovementDebit>> updateCreditMovementById(@PathVariable String id, @RequestBody MovementDebit movementDebit){
 
         return this.movementDebitService.updateCreditMovement(id,movementDebit)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.badRequest().build());
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(value = "/delete/{id}")
     public Mono<ResponseEntity<Void>> deleteCreditMovementById(@PathVariable String id){
         return this.movementDebitService.deleteCreditMovement(id)
                 .map(r -> ResponseEntity.ok().<Void>build())
